@@ -3,6 +3,7 @@ import styled from "styled-components";
 import tippy, { sticky } from "tippy.js";
 import "tippy.js/animations/shift-toward.css";
 import { useBlackout, useLandmark } from "../hooks";
+import { useSocketSync } from "../socket/socket";
 import {
   tippyLocationInfoForMark,
   tippyLocationInfoForData,
@@ -11,6 +12,49 @@ import {
 } from "./TippyLocationInfo";
 import ActiveRoute from "./ActiveRoute";
 
+let activeMarkId = null;
+let suppressEmit = false;
+
+const getElementById = (id) => {
+  if (typeof document === "undefined") return null;
+  return document.getElementById(id);
+};
+
+const hideMarkTippy = (id) => {
+  if (!id) return;
+  const el = getElementById(id);
+  if (el && el._tippy) {
+    el._tippy.hide();
+  }
+};
+
+const showMarkTippy = (id) => {
+  if (!id) return;
+  const el = getElementById(id);
+  if (el && el._tippy) {
+    el._tippy.show();
+  }
+};
+
+const applyRemoteTippyState = (id, open) => {
+  suppressEmit = true;
+  if (open) {
+    if (activeMarkId && activeMarkId !== id) {
+      hideMarkTippy(activeMarkId);
+    }
+    showMarkTippy(id);
+    activeMarkId = id;
+  } else {
+    hideMarkTippy(id);
+    if (activeMarkId === id) {
+      activeMarkId = null;
+    }
+  }
+  setTimeout(() => {
+    suppressEmit = false;
+  }, 0);
+};
+
 function MarkWithTippy({ children, bgColor = "#ffffffdd" }) {
   const ref = useRef(null);
   const { selectedLandmarkId, setSelectedLandmarkId } = useLandmark();
@@ -18,6 +62,12 @@ function MarkWithTippy({ children, bgColor = "#ffffffdd" }) {
   const istenkm = Routepath.pathname === "/tenkm";
 
   const { blackout } = useBlackout();
+  const { emitSync } = useSocketSync({
+    "mark:tippy": (payload) => {
+      if (!payload || !payload.id) return;
+      applyRemoteTippyState(payload.id, !!payload.open);
+    },
+  });
 
   const calculateTextWidth = (text, className) => {
     const tempElement = document.createElement("div");
@@ -128,14 +178,30 @@ function MarkWithTippy({ children, bgColor = "#ffffffdd" }) {
           followCursor: false,
           interactive: true,
           offset: [0, 0],
-          trigger: "click mouseenter", // Ensure the trigger is set to "click"
+          trigger: "click",
           sticky: true,
           plugins: [sticky],
           zIndex: 5,
           showOnCreate: false, // Ensure it does not show on create
           hideOnClick: true,
+          onShow: () => {
+            if (suppressEmit) return;
+            if (activeMarkId && activeMarkId !== ele.id) {
+              hideMarkTippy(activeMarkId);
+            }
+            activeMarkId = ele.id;
+            emitSync("mark:tippy", { id: ele.id, open: true });
+          },
+          onHide: () => {
+            if (suppressEmit) return;
+            if (activeMarkId === ele.id) {
+              activeMarkId = null;
+            }
+            emitSync("mark:tippy", { id: ele.id, open: false });
+          },
           appendTo: document.getElementById("app"),
         });
+        instances.push(instance);
       }
     }
     return () => {
@@ -143,7 +209,7 @@ function MarkWithTippy({ children, bgColor = "#ffffffdd" }) {
          instance.destroy();
       }
     };
-  }, [blackout]);
+  }, [blackout, emitSync]);
 
   return (
     <>
