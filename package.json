@@ -1,0 +1,130 @@
+{
+  "name": "township",
+  "version": "0.1.0",
+  "private": true,
+  "author": {
+    "name": "Nikhil Choubey"
+  },
+  "description": "township",
+  "main": "public/main.js",
+  "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "animate.css": "^4.1.1",
+    "classnames": "^2.5.1",
+    "electron-squirrel-startup": "^1.0.1",
+    "framer-motion": "^12.23.9",
+    "lucide-react": "^0.441.0",
+    "mapbox-gl": "^3.6.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.3.0",
+    "react-map-interaction": "^2.1.0",
+    "react-router-dom": "^6.26.2",
+    "react-scripts": "5.0.1",
+    "react-zoom-pan-pinch": "^3.5.1",
+    "socket.io-client": "^4.7.5",
+    "styled-components": "^5.3.11",
+    "svg-path-reverse": "^1.7.0",
+    "three": "^0.168.0",
+    "threebox-plugin": "^2.2.7",
+    "tippy.js": "^6.3.7",
+    "web-vitals": "^2.1.4"
+  },
+  "homepage": "./",
+  "scripts": {
+    "start": "react-scripts start",
+    "electron-start": "electron .",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  },
+  "build": {
+    "appId": "com.convrse.app",
+    "productName": "omaxe-lucknow",
+    "directories": {
+      "buildResources": "assets"
+    },
+    "files": [
+      "build/**/*",
+      "public/main.js",
+      "public/preload.js",
+      "node_modules/**/*"
+    ],
+    "extraFiles": [
+      "node_modules/ffmpeg-static/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/m3m.png"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets"
+    }
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
+    "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron/fuses": "^1.8.0",
+    "electron": "31.1.0",
+    "electron-builder": "^24.13.3"
+  }
+}
