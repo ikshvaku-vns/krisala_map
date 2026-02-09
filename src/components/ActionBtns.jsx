@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import IconButton from "./IconButton";
 import { ExitFullScreen, FullScreenIcon, HideIcon, RadiusIcon } from "./Icons";
 import { useLandmark } from "../hooks";
@@ -6,9 +6,13 @@ import { AppContext } from "../context";
 import { toggleFullScreen, toogleHideOverlays } from "../utilities/function";
 
 export default function ActionBtns() {
-  const { setShowRadius, fullScreenMode, setFullScreenMode } =
-    useContext(AppContext);
-  const [showOverlays, setShowOverlays] = useState(true);
+  const {
+    setShowRadius,
+    fullScreenMode,
+    setFullScreenMode,
+    showOverlays,
+    setShowOverlays,
+  } = useContext(AppContext);
 
   const handleFullScreenChange = () => {
     setFullScreenMode(document.fullscreenElement !== null);

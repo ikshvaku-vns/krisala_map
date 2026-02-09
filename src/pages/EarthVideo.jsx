@@ -94,11 +94,12 @@
 
 
 import React, { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Earth_Video = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -106,7 +107,7 @@ const Earth_Video = () => {
 
     const handleVideoEnd = () => {
       console.log('Video ended, navigating to /thirtyfive');
-      navigate('/thirtyfive');
+      navigate(`/thirtyfive${location.search || ""}`);
     };
 
     const handleCanPlay = () => {
@@ -120,7 +121,7 @@ const Earth_Video = () => {
           console.error('Auto-play failed:', error);
           setTimeout(() => {
             console.log('Auto-play failed, navigating to /thirtyfive as fallback');
-            navigate('/thirtyfive');
+            navigate(`/thirtyfive${location.search || ""}`);
           }, 2000);
         });
     };
@@ -128,9 +129,9 @@ const Earth_Video = () => {
     const handleError = (e) => {
       console.error('Video playback error:', e.target.error);
       setTimeout(() => {
-        console.log('Video error, navigating to /thirtyfive');
-        navigate('/thirtyfive');
-      }, 2000);
+      console.log('Video error, navigating to /thirtyfive');
+      navigate(`/thirtyfive${location.search || ""}`);
+    }, 2000);
     };
 
     video.addEventListener('ended', handleVideoEnd);
@@ -144,11 +145,11 @@ const Earth_Video = () => {
       video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('error', handleError);
     };
-  }, [navigate]);
+  }, [navigate, location.search]);
 
   const handleSkip = () => {
     console.log('Skip button clicked, navigating to /thirtyfive');
-    navigate('/thirtyfive');
+    navigate(`/thirtyfive${location.search || ""}`);
   };
 
   return (

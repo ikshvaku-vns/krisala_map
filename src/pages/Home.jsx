@@ -19,7 +19,7 @@ import Roads from "../components/Roads";
 import NavigationButtons from "../components/NavigationButtons";
 import { pune_loco_icon } from "../components/Icons";
 import Legends from "../components/atoms/Legends";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { MapSwitcher } from "../components/LeftSideButton";
 import Logo, { MasterPlan } from "../components/Logo";
@@ -50,11 +50,12 @@ function Home() {
   const [rotation, setRotation] = useState(0);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0, containerSize: 0 });
   const navigate = useNavigate();
+  const location = useLocation();
   const handletenkmClick = (route) => (e) => {
     e?.preventDefault(); // Optional chaining in case event isn't passed
     setIsTransitioning(true);
     setTimeout(() => {
-      navigate(route);
+      navigate(`${route}${location.search || ""}`);
     }, 400);
   };
   return (

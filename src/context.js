@@ -1,4 +1,5 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
+import { useSocketSync } from "./socket/socket";
 
 export const AppContext = createContext();
 
@@ -10,6 +11,69 @@ export const AppContextProvider = ({ children }) => {
   const [isSingleSelect, setIsSingleSelect] = useState(false);
   const [sattellite,setSattelite] = useState(false);
   const [fullScreenMode, setFullScreenMode] = useState(false);
+  const [showOverlays, setShowOverlays] = useState(true);
+  const suppressEmitRef = useRef(false);
+
+  const { emitSync } = useSocketSync({
+    "context:update": (payload) => {
+      if (!payload || typeof payload !== "object") return;
+      suppressEmitRef.current = true;
+
+      if (payload.activeMapFilterIds !== undefined) {
+        setActiveMapFilterIds(payload.activeMapFilterIds);
+      }
+      if (payload.selectedLandmarkId !== undefined) {
+        setSelectedLandmarkId(payload.selectedLandmarkId);
+      }
+      if (payload.showRadius !== undefined) {
+        setShowRadius(payload.showRadius);
+      }
+      if (payload.label !== undefined) {
+        setLabel(payload.label);
+      }
+      if (payload.isSingleSelect !== undefined) {
+        setIsSingleSelect(payload.isSingleSelect);
+      }
+      if (payload.sattellite !== undefined) {
+        setSattelite(payload.sattellite);
+      }
+      if (payload.fullScreenMode !== undefined) {
+        setFullScreenMode(payload.fullScreenMode);
+      }
+      if (payload.showOverlays !== undefined) {
+        setShowOverlays(payload.showOverlays);
+      }
+
+      setTimeout(() => {
+        suppressEmitRef.current = false;
+      }, 0);
+    },
+  });
+
+  useEffect(() => {
+    if (suppressEmitRef.current) return;
+
+    emitSync("context:update", {
+      activeMapFilterIds,
+      selectedLandmarkId,
+      showRadius,
+      label,
+      isSingleSelect,
+      sattellite,
+      fullScreenMode,
+      showOverlays,
+    });
+  }, [
+    activeMapFilterIds,
+    selectedLandmarkId,
+    showRadius,
+    label,
+    isSingleSelect,
+    sattellite,
+    fullScreenMode,
+    showOverlays,
+    emitSync,
+  ]);
 
   return (
     <AppContext.Provider
@@ -27,7 +91,9 @@ export const AppContextProvider = ({ children }) => {
         sattellite,
         setSattelite,
         fullScreenMode,
-        setFullScreenMode
+        setFullScreenMode,
+        showOverlays,
+        setShowOverlays,
       }}
     >
       {children}

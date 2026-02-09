@@ -19,7 +19,7 @@ import { blank_map } from "../data/svgs";
 import Hotspots from "../components/Hotspots";
 import Roads from "../components/Roads";
 import NavigationButtons from "../components/NavigationButtons";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { tenkm_locotion_icon } from "../components/Icons";
 import Legends from "../components/atoms/Legends";
 import ActiveRoute from "../components/ActiveRoute";
@@ -57,8 +57,9 @@ function TenKm() {
     setShow3DView(!show3DView); // Toggle the state
   };
   const navigate = useNavigate();
+  const location = useLocation();
   const navigateTo3DView = () => {
-    navigate("/3d-view");
+    navigate(`/3d-view${location.search || ""}`);
   };
 
   return (

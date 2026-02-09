@@ -8,7 +8,8 @@ const NavigationButtons = () => {
   const is10KmView = location.pathname === "/tenkm";
 
   const toggleView = () => {
-    navigate(is10KmView ? "/thirtyfive" : "/tenkm");
+    const target = is10KmView ? "/thirtyfive" : "/tenkm";
+    navigate(`${target}${location.search || ""}`);
   };
 
   return (
