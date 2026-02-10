@@ -20,7 +20,7 @@ import NavigationButtons from "../components/NavigationButtons";
 import { pune_loco_icon } from "../components/Icons";
 import Legends from "../components/atoms/Legends";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MapSwitcher } from "../components/LeftSideButton";
 import Logo, { MasterPlan } from "../components/Logo";
 import { AppContext } from "../context";
@@ -45,11 +45,26 @@ import { useSocketRoom } from "../socket/socket";
 function Home() {
   useSocketRoom();
   const mapFilterIds = getMapFilterIds("/");
-  const { label, setLabel, sattellite, setSattelite } = useContext(AppContext);
+  const {
+    label,
+    setLabel,
+    sattellite,
+    setSattelite,
+    isMasterplanOpen,
+    setIsMasterplanOpen,
+    masterplanRotation,
+    setMasterplanRotation,
+    masterplanTransform,
+    setMasterplanTransform,
+  } = useContext(AppContext);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [rotation, setRotation] = useState(-90);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0, containerSize: 0 });
+  const defaultRotation = -90;
+  const rotation = masterplanRotation ?? defaultRotation;
+  const setTransformRef = useRef(null);
+  const suppressTransformEmitRef = useRef(false);
+  const localTransformUpdateRef = useRef(false);
+  const lastAppliedTransformRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const handletenkmClick = (route) => (e) => {
@@ -58,6 +73,65 @@ function Home() {
     setTimeout(() => {
       navigate(`${route}${location.search || ""}`);
     }, 400);
+  };
+
+  useEffect(() => {
+    if (!isMasterplanOpen) return;
+    if (masterplanRotation == null) {
+      setMasterplanRotation(defaultRotation);
+    }
+    if (!masterplanTransform) {
+      setMasterplanTransform({ scale: 1, positionX: 0, positionY: 0 });
+    }
+  }, [
+    isMasterplanOpen,
+    masterplanRotation,
+    masterplanTransform,
+    setMasterplanRotation,
+    setMasterplanTransform,
+  ]);
+
+  useEffect(() => {
+    if (!isMasterplanOpen) return;
+    if (!masterplanTransform) return;
+    if (!setTransformRef.current) return;
+
+    if (localTransformUpdateRef.current) {
+      localTransformUpdateRef.current = false;
+      return;
+    }
+
+    const last = lastAppliedTransformRef.current;
+    if (
+      last &&
+      last.scale === masterplanTransform.scale &&
+      last.positionX === masterplanTransform.positionX &&
+      last.positionY === masterplanTransform.positionY
+    ) {
+      return;
+    }
+
+    suppressTransformEmitRef.current = true;
+    lastAppliedTransformRef.current = masterplanTransform;
+    setTransformRef.current(
+      masterplanTransform.positionX,
+      masterplanTransform.positionY,
+      masterplanTransform.scale,
+      0
+    );
+  }, [isMasterplanOpen, masterplanTransform]);
+
+  const handleTransformed = (_ctx, state) => {
+    if (suppressTransformEmitRef.current) {
+      suppressTransformEmitRef.current = false;
+      return;
+    }
+    localTransformUpdateRef.current = true;
+    setMasterplanTransform({
+      scale: state.scale,
+      positionX: state.positionX,
+      positionY: state.positionY,
+    });
   };
   return (
     <Style
@@ -119,20 +193,27 @@ function Home() {
           {/* <Link to="/tenkm" onClick={handletenkmClick("/tenkm")} className="logo-bounce">
             <Logo/>
           </Link> */}
-          <Link className="logo-bounce">
-            <Logo toggleModal={() => setIsModalOpen(true)} />
+          <Link
+            className="logo-bounce"
+            to={`${location.pathname}${location.search || ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsMasterplanOpen(true);
+            }}
+          >
+            <Logo toggleModal={() => setIsMasterplanOpen(true)} />
           </Link>
         </svg>
       </Zoomable>
       <LocationInfo />
 
-      {isModalOpen && (
+      {isMasterplanOpen && (
         <div
           className="modal"
           style={{ display: "flex" }} // Add this to override the default 'none'
           onClick={() => {
-            setIsModalOpen(false);
-            setRotation(-90); // Reset rotation when closing
+            setIsMasterplanOpen(false);
+            setMasterplanRotation(defaultRotation); // Reset rotation when closing
           }}
         >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -147,8 +228,11 @@ function Home() {
                 panning={{ disabled: false }}
                 limitToBounds={true}
                 centerOnInit={true}
+                onTransformed={handleTransformed}
               >
-                {({ zoomIn, zoomOut, resetTransform }) => (
+                {({ zoomIn, zoomOut, resetTransform, setTransform }) => {
+                  setTransformRef.current = setTransform;
+                  return (
                   <>
                     <TransformComponent
                       wrapperStyle={{
@@ -214,14 +298,22 @@ function Home() {
                       </button>
                       <button
                         className="modal-control-btn"
-                        onClick={() => setRotation((prev) => prev + 90)}
+                        onClick={() =>
+                          setMasterplanRotation(
+                            (prev) => (prev ?? defaultRotation) + 90
+                          )
+                        }
                         title="Rotate Right"
                       >
                         <FontAwesomeIcon icon={faRotateRight} />
                       </button>
                       <button
                         className="modal-control-btn"
-                        onClick={() => setRotation((prev) => prev - 90)}
+                        onClick={() =>
+                          setMasterplanRotation(
+                            (prev) => (prev ?? defaultRotation) - 90
+                          )
+                        }
                         title="Rotate Left"
                       >
                         <FontAwesomeIcon icon={faRotateLeft} />
@@ -230,7 +322,12 @@ function Home() {
                         className="modal-control-btn"
                         onClick={() => {
                           resetTransform();
-                          setRotation(-90);
+                          setMasterplanRotation(defaultRotation);
+                          setMasterplanTransform({
+                            scale: 1,
+                            positionX: 0,
+                            positionY: 0,
+                          });
                         }}
                         title="Reset"
                       >
@@ -239,8 +336,8 @@ function Home() {
                       <button
                         className="modal-control-btn"
                         onClick={() => {
-                          setIsModalOpen(false);
-                          setRotation(-90);
+                          setIsMasterplanOpen(false);
+                          setMasterplanRotation(defaultRotation);
                         }}
                         title="Close"
                       >
@@ -249,7 +346,8 @@ function Home() {
 
                     </div>
                   </>
-                )}
+                  );
+                }}
               </TransformWrapper>
             </div>
             <div className="disclaimer-overlay">
