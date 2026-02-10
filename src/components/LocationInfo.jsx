@@ -49,11 +49,10 @@ function LocationInfo() {
 
   return (
     <div
-      className={`overlay-can-hide absolute ${
-        selectedLandmarkId.includes("Amity University")
+      className={`overlay-can-hide absolute ${selectedLandmarkId.includes("Amity University")
           ? "bottom-[33%]"
           : "bottom-[10%]"
-      } left-[17vw] z-30 route-details flex flex-row bg-[rgba(0,0,0,0.5)] backdrop-blur-sm text-slate-200 rounded-md overflow-hidden`}
+        } right-[2%] z-30 route-details flex flex-row bg-[rgba(0,0,0,0.5)] backdrop-blur-sm text-slate-200 rounded-md overflow-hidden`}
       style={{ width: "32vw" }}
     >
       {imageUrls?.[selectedLandmarkImageName] && (

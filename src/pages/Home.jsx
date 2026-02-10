@@ -38,6 +38,7 @@ import {
   faRotateRight,
   faRotateLeft,
   faRotate,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { useSocketRoom } from "../socket/socket";
 
@@ -47,7 +48,7 @@ function Home() {
   const { label, setLabel, sattellite, setSattelite } = useContext(AppContext);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [rotation, setRotation] = useState(0);
+  const [rotation, setRotation] = useState(-90);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0, containerSize: 0 });
   const navigate = useNavigate();
   const location = useLocation();
@@ -60,9 +61,8 @@ function Home() {
   };
   return (
     <Style
-      className={`h-screen w-screen no-scrollbar selection:bg-none ${
-        isTransitioning ? "page-transition" : ""
-      }`}
+      className={`h-screen w-screen no-scrollbar selection:bg-none ${isTransitioning ? "page-transition" : ""
+        }`}
       id="app"
     >
       <div className="bg-[rgba(255,255,255)] absolute right-2 top-2 z-10 w-fit h-fit rounded-xl p-2">
@@ -85,9 +85,8 @@ function Home() {
             id="image0_1_2"
             height="100%"
             style={{ objectFit: "contain" }}
-            xlinkHref={`/images/${
-              !sattellite ? "35kmsat.webp" : "35kmmap.png"
-            }`}
+            xlinkHref={`/images/${!sattellite ? "35kmsat.webp" : "35kmmap.png"
+              }`}
           />
 
           {/* <Roads /> */}
@@ -133,19 +132,11 @@ function Home() {
           style={{ display: "flex" }} // Add this to override the default 'none'
           onClick={() => {
             setIsModalOpen(false);
-            setRotation(0); // Reset rotation when closing
+            setRotation(-90); // Reset rotation when closing
           }}
         >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <span
-              className="close-btn1"
-              onClick={() => {
-                setIsModalOpen(false);
-                setRotation(0); // Reset rotation when closing
-              }}
-            >
-              &times;
-            </span>
+
             <div className="image-container-wrapper">
               <TransformWrapper
                 initialScale={1}
@@ -239,12 +230,23 @@ function Home() {
                         className="modal-control-btn"
                         onClick={() => {
                           resetTransform();
-                          setRotation(0);
+                          setRotation(-90);
                         }}
                         title="Reset"
                       >
                         <FontAwesomeIcon icon={faRotate} />
                       </button>
+                      <button
+                        className="modal-control-btn"
+                        onClick={() => {
+                          setIsModalOpen(false);
+                          setRotation(-90);
+                        }}
+                        title="Close"
+                      >
+                        <FontAwesomeIcon icon={faXmark} />
+                      </button>
+
                     </div>
                   </>
                 )}
@@ -265,8 +267,7 @@ function Home() {
 
       {/* <Legends /> */}
       {label && <LegendFilter label={label} />}
-      <ActionBtns />
-      <div className="absolute bottom-1 left-[20px] text-gray-400 capitalize underline underline-offset-2">
+      <div className="absolute bottom-1 left-[20px] text-[9px] text-gray-400 capitalize underline underline-offset-2">
         *Note: Map Not to scale
       </div>
       <Compass angle={0} />
