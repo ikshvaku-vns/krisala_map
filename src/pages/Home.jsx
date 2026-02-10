@@ -56,6 +56,7 @@ function Home() {
     setMasterplanRotation,
     masterplanTransform,
     setMasterplanTransform,
+    selectedLandmarkId,
   } = useContext(AppContext);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0, containerSize: 0 });
@@ -135,8 +136,7 @@ function Home() {
   };
   return (
     <Style
-      className={`h-screen w-screen no-scrollbar selection:bg-none ${isTransitioning ? "page-transition" : ""
-        }`}
+      className={`h-screen w-screen no-scrollbar selection:bg-none ${isTransitioning ? "page-transition" : ""} ${selectedLandmarkId ? "landmark-selected" : ""}`}
       id="app"
     >
       <div className="bg-[rgba(255,255,255)] absolute right-2 top-2 z-10 w-fit h-fit rounded-xl p-2">
@@ -145,6 +145,7 @@ function Home() {
           className="w-[180px] h-auto"
         />
       </div>
+
       <Zoomable>
         <svg
           preserveAspectRatio="xMidYMid slice"
@@ -195,6 +196,7 @@ function Home() {
           </Link> */}
           <Link
             className="logo-bounce"
+            id="logoTrigger"
             to={`${location.pathname}${location.search || ""}`}
             onClick={(e) => {
               e.preventDefault();
@@ -233,119 +235,119 @@ function Home() {
                 {({ zoomIn, zoomOut, resetTransform, setTransform }) => {
                   setTransformRef.current = setTransform;
                   return (
-                  <>
-                    <TransformComponent
-                      wrapperStyle={{
-                        width: "100%",
-                        height: "100%",
-                        overflow: "visible",
-                      }}
-                      contentStyle={{
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <img
-                        src="/images/masterplan.webp"
-                        alt="Master Plan"
-                        className="modal-image"
-                        onLoad={(e) => {
-                          const img = e.target;
-                          const maxViewport = Math.min(window.innerWidth, window.innerHeight);
-                          // Calculate scale to fit viewport
-                          const scale = Math.min(
-                            maxViewport / img.naturalWidth,
-                            maxViewport / img.naturalHeight
-                          );
-                          // Use the larger dimension to accommodate rotation
-                          const maxDimension = Math.max(img.naturalWidth, img.naturalHeight);
-                          const containerSize = maxDimension * scale;
-                          setImageDimensions({
-                            width: img.naturalWidth * scale,
-                            height: img.naturalHeight * scale,
-                            containerSize: containerSize,
-                          });
+                    <>
+                      <TransformComponent
+                        wrapperStyle={{
+                          width: "100%",
+                          height: "100%",
+                          overflow: "visible",
                         }}
-                        style={{
-                          width: imageDimensions.width || "auto",
-                          height: imageDimensions.height || "auto",
-                          maxWidth: "100vw",
-                          maxHeight: "100vh",
-                          objectFit: "contain",
-                          transform: `rotate(${rotation}deg)`,
-                          transition: "transform 0.3s ease",
-                          display: "block",
+                        contentStyle={{
+                          width: "100%",
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
                         }}
-                      />
-                    </TransformComponent>
-                    <div className="modal-controls">
-                      <button
-                        className="modal-control-btn"
-                        onClick={() => zoomIn()}
-                        title="Zoom In"
                       >
-                        <FontAwesomeIcon icon={faMagnifyingGlassPlus} />
-                      </button>
-                      <button
-                        className="modal-control-btn"
-                        onClick={() => zoomOut()}
-                        title="Zoom Out"
-                      >
-                        <FontAwesomeIcon icon={faMagnifyingGlassMinus} />
-                      </button>
-                      <button
-                        className="modal-control-btn"
-                        onClick={() =>
-                          setMasterplanRotation(
-                            (prev) => (prev ?? defaultRotation) + 90
-                          )
-                        }
-                        title="Rotate Right"
-                      >
-                        <FontAwesomeIcon icon={faRotateRight} />
-                      </button>
-                      <button
-                        className="modal-control-btn"
-                        onClick={() =>
-                          setMasterplanRotation(
-                            (prev) => (prev ?? defaultRotation) - 90
-                          )
-                        }
-                        title="Rotate Left"
-                      >
-                        <FontAwesomeIcon icon={faRotateLeft} />
-                      </button>
-                      <button
-                        className="modal-control-btn"
-                        onClick={() => {
-                          resetTransform();
-                          setMasterplanRotation(defaultRotation);
-                          setMasterplanTransform({
-                            scale: 1,
-                            positionX: 0,
-                            positionY: 0,
-                          });
-                        }}
-                        title="Reset"
-                      >
-                        <FontAwesomeIcon icon={faRotate} />
-                      </button>
-                      <button
-                        className="modal-control-btn"
-                        onClick={() => {
-                          setIsMasterplanOpen(false);
-                          setMasterplanRotation(defaultRotation);
-                        }}
-                        title="Close"
-                      >
-                        <FontAwesomeIcon icon={faXmark} />
-                      </button>
+                        <img
+                          src="/images/masterplan.webp"
+                          alt="Master Plan"
+                          className="modal-image"
+                          onLoad={(e) => {
+                            const img = e.target;
+                            const maxViewport = Math.min(window.innerWidth, window.innerHeight);
+                            // Calculate scale to fit viewport
+                            const scale = Math.min(
+                              maxViewport / img.naturalWidth,
+                              maxViewport / img.naturalHeight
+                            );
+                            // Use the larger dimension to accommodate rotation
+                            const maxDimension = Math.max(img.naturalWidth, img.naturalHeight);
+                            const containerSize = maxDimension * scale;
+                            setImageDimensions({
+                              width: img.naturalWidth * scale,
+                              height: img.naturalHeight * scale,
+                              containerSize: containerSize,
+                            });
+                          }}
+                          style={{
+                            width: imageDimensions.width || "auto",
+                            height: imageDimensions.height || "auto",
+                            maxWidth: "100vw",
+                            maxHeight: "100vh",
+                            objectFit: "contain",
+                            transform: `rotate(${rotation}deg)`,
+                            transition: "transform 0.3s ease",
+                            display: "block",
+                          }}
+                        />
+                      </TransformComponent>
+                      <div className="modal-controls">
+                        <button
+                          className="modal-control-btn"
+                          onClick={() => zoomIn()}
+                          title="Zoom In"
+                        >
+                          <FontAwesomeIcon icon={faMagnifyingGlassPlus} />
+                        </button>
+                        <button
+                          className="modal-control-btn"
+                          onClick={() => zoomOut()}
+                          title="Zoom Out"
+                        >
+                          <FontAwesomeIcon icon={faMagnifyingGlassMinus} />
+                        </button>
+                        <button
+                          className="modal-control-btn"
+                          onClick={() =>
+                            setMasterplanRotation(
+                              (prev) => (prev ?? defaultRotation) + 90
+                            )
+                          }
+                          title="Rotate Right"
+                        >
+                          <FontAwesomeIcon icon={faRotateRight} />
+                        </button>
+                        <button
+                          className="modal-control-btn"
+                          onClick={() =>
+                            setMasterplanRotation(
+                              (prev) => (prev ?? defaultRotation) - 90
+                            )
+                          }
+                          title="Rotate Left"
+                        >
+                          <FontAwesomeIcon icon={faRotateLeft} />
+                        </button>
+                        <button
+                          className="modal-control-btn"
+                          onClick={() => {
+                            resetTransform();
+                            setMasterplanRotation(defaultRotation);
+                            setMasterplanTransform({
+                              scale: 1,
+                              positionX: 0,
+                              positionY: 0,
+                            });
+                          }}
+                          title="Reset"
+                        >
+                          <FontAwesomeIcon icon={faRotate} />
+                        </button>
+                        <button
+                          className="modal-control-btn"
+                          onClick={() => {
+                            setIsMasterplanOpen(false);
+                            setMasterplanRotation(defaultRotation);
+                          }}
+                          title="Close"
+                        >
+                          <FontAwesomeIcon icon={faXmark} />
+                        </button>
 
-                    </div>
-                  </>
+                      </div>
+                    </>
                   );
                 }}
               </TransformWrapper>

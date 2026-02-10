@@ -231,11 +231,10 @@ const LegendFilter = ({ label }) => {
   return (
     <div
       className="overlay-can-hide fixed top-24 left-[2%]"
-      style={{ top: "55%", transform: "translateY(-50%)" }}
+      style={{ top: "40%", transform: "translateY(-50%)" }}
     >
       <div
-        className="space-y-1 backdrop-blur-[6px] bg-[black]/50 rounded-lg p-2 shadow-lg max-h-[60vh] overflow-y-auto scrollbar-hide"
-        style={{ minHeight: "100px", minWidth: "140px" }}
+        className="space-y-1 backdrop-blur-[6px] bg-[black]/50 rounded-lg p-2 shadow-lg scrollbar-hide"
       >
         <div className="text-white text-center sticky top-0  -mx-2 -mt-2 py-1 mb-1 z-10 rounded-t-lg">
           <span className="font-medium text-xs uppercase tracking-wider">

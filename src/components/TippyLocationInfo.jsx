@@ -54,7 +54,7 @@ export const tippyLocationInfoMark = (title) => {
   const time = title?.distance;
   const distance = title?.distance;
 
-  return `<div class="overlay-can-hide route-details flex flex-col gap-2  bg-[rgba(0,0,0,0.0)]  text-slate-200 rounded-md px-3 py-2">
+  return `<div class="overlay-can-hide route-details route-info-box flex flex-col gap-2  bg-[rgba(0,0,0,0.0)]  text-slate-200 rounded-md px-3 py-2">
           <div class="flex gap-2 font-light">
             <div class="distance flex gap-2 items-center justify-center ">
               <div class="w-[20px] h-[15px] object-contain"><svg viewBox="0 0 31 26" fill="none" xmlns="http://www.w3.org/2000/svg">
