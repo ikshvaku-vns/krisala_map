@@ -89,9 +89,8 @@ function TenKm() {
                 id="image0_1_2"
                 height="100%"
                 style={{ objectFit: "contain" }}
-                xlinkHref={`/images/${
-                  !sattellite ? "tensat.webp" : "10kmmap.png"
-                }`}
+                xlinkHref={`/images/${!sattellite ? "tensat.webp" : "10kmmap.png"
+                  }`}
               />
               {/* <Roads /> */}
 
@@ -120,8 +119,8 @@ function TenKm() {
             </svg>
           </Zoomable>
           <LocationInfo />
-          <ActionBtns />
-          <div className="absolute bottom-1 left-[20px] text-gray-400 capitalize underline underline-offset-2">
+          {/* <ActionBtns /> */}
+          <div className="absolute bottom-1 left-[20px] text-[9px] text-gray-400 capitalize underline underline-offset-2">
             *Note: Map Not to scale
           </div>
           <Compass angle={0} />
