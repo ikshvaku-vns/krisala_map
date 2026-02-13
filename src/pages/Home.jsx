@@ -218,7 +218,7 @@ function Home() {
             <div className="image-container-wrapper">
             <DeepZoomViewer
                 ref={deepZoomRef}
-                tileBaseUrl="https://d1ovqzmursgzel.cloudfront.net/krisala-img/krisala-masterplan/masterplan_files/"
+                tileBaseUrl="https://d1ovqzmursgzel.cloudfront.net/krisala-img/krisala-masterplan/masterplan-final_files/"
                 rotation={rotation}
                 minZoomLevel={0.5}
                 maxZoomLevel={20}
