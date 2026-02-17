@@ -19,6 +19,7 @@ import Roads from "../components/Roads";
 import NavigationButtons from "../components/NavigationButtons";
 import { pune_loco_icon } from "../components/Icons";
 import Legends from "../components/atoms/Legends";
+import HighwayLegend from "../components/atoms/HighwayLegend";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useRef, useState } from "react";
 import { MapSwitcher } from "../components/LeftSideButton";
@@ -276,6 +277,7 @@ function Home() {
       )}
 
       {/* <Legends /> */}
+      <HighwayLegend />
       {label && <LegendFilter label={label} />}
       <div className="absolute bottom-1 left-[20px] text-[9px] text-gray-400 capitalize underline underline-offset-2">
         *Note: Map Not to scale

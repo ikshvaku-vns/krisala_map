@@ -22,6 +22,7 @@ import NavigationButtons from "../components/NavigationButtons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { tenkm_locotion_icon } from "../components/Icons";
 import Legends from "../components/atoms/Legends";
+import HighwayLegend from "../components/atoms/HighwayLegend";
 import ActiveRoute from "../components/ActiveRoute";
 import Logo10km, { MasterPlan } from "../components/Logo10km";
 import { AppContext } from "../context";
@@ -37,6 +38,8 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { useSocketRoom } from "../socket/socket";
+import MarkWithTippy from "../components/MarkWithTippy";
+// import { mark_tenkm_highway } from "../data/mark"; // Commented out for now - will use later
 
 function TenKm() {
   useSocketRoom();
@@ -170,6 +173,16 @@ function TenKm() {
               {svg_defs}
 
               <Radius />
+              
+              {/* Highway paths must be rendered before Blackout to appear under the overlay */}
+              {/* Commented out for now - will use later
+              <g className="overlay-can-hide marks highway">
+                <MarkWithTippy>
+                  {mark_tenkm_highway}
+                </MarkWithTippy>
+              </g>
+              */}
+
               <Blackout />
               <ActiveMarksOnMap
                 filterIdsToShow={mapFilterIds.filter(
@@ -182,6 +195,7 @@ function TenKm() {
                   (filter) => filter === "map-filter-landmarks"
                 )}
               />
+
               {label && <LabelSvg label={label} />}
               {/* <Link className="masterplan">
                 <MasterPlan toggleModal={()=>setIsModalOpen(true)}/>
@@ -287,6 +301,7 @@ function TenKm() {
             </div>
           )}
           {/* <Legends /> */}
+          <HighwayLegend />
           <MapSwitcher10Km
             sattellite={sattellite}
             setSattelite={setSattelite}
