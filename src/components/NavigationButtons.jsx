@@ -13,7 +13,7 @@ const NavigationButtons = () => {
   };
 
   return (
-    <div className="absolute bottom-[45px] left-4 z-100">
+    <div className="absolute bottom-[75px] left-4 z-100">
       <button
         onClick={() => {
           toggleView();
